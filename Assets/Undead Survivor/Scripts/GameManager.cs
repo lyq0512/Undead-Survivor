@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager instance;// test sourcetree sync
 
     [Header("# Game Control")]
     public bool isLive;
