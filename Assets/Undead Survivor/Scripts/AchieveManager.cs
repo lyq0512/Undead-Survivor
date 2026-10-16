@@ -27,6 +27,32 @@ public class AchieveManager : MonoBehaviour
         UnlockCharacter();
     }
 
+        // 查询指定角色是否已经解锁。
+    public bool IsCharacterUnlocked(int characterId)
+    {
+        switch (characterId)
+        {
+            case 0:
+            case 1:
+                return true;
+
+            case 2:
+                return PlayerPrefs.GetInt("unlockJasper", 0) == 1;
+
+            case 3:
+                return PlayerPrefs.GetInt("unlockTater", 0) == 1;
+
+            default:
+                return false;
+        }
+    }
+
+    // 供角色选择面板主动刷新锁定和解锁状态。
+    public void RefreshCharacterViews()
+    {
+        UnlockCharacter();
+    }
+
     private void UnlockCharacter()
     {
         for (int index = 0; index < lockCharacter.Length; index++)

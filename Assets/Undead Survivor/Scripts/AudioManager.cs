@@ -4,6 +4,21 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
 
+    private const string BgmVolumeKey = "UndeadSurvivor.Audio.BgmVolume";
+    private const string SfxVolumeKey = "UndeadSurvivor.Audio.SfxVolume";
+
+    // 供设置面板读取当前背景音乐音量。
+    public float BgmVolume
+    {
+        get { return bgmVolume; }
+    }
+
+    // 供设置面板读取当前音效音量。
+    public float SfxVolume
+    {
+        get { return sfxbgmVolume; }
+    }
+
     [Header("BGM")]
     public AudioClip bgmClip;
     public float bgmVolume;
@@ -23,6 +38,7 @@ public class AudioManager : MonoBehaviour
     {
         instance = this;
         Init();
+        LoadVolumeSettings();
     }
 
     private void Init()
@@ -49,12 +65,89 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    // 应用进入后台时保存音量。
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+        {
+            SaveVolumeSettings();
+        }
+    }
+
+    // 正常退出应用时保存音量。
+    private void OnApplicationQuit()
+    {
+        SaveVolumeSettings();
+    }
+
     public void PlayBgm(bool isPlay)
     {
+        if (bgmPlayer == null)
+        {
+            return;
+        }
+
         if (isPlay)
-            bgmPlayer.Play();
+        {
+            // 已经播放时保持当前进度，避免重新开始。
+            if (!bgmPlayer.isPlaying)
+            {
+                bgmPlayer.Play();
+            }
+        }
         else
+        {
             bgmPlayer.Stop();
+        }
+    }
+
+        // 设置背景音乐音量，范围为 0～1。
+    public void SetBgmVolume(float value)
+    {
+        bgmVolume = Mathf.Clamp01(value);
+
+        if (bgmPlayer != null)
+        {
+            bgmPlayer.volume = bgmVolume;
+        }
+    }
+
+        // 设置所有音效通道的音量，范围为 0～1。
+    public void SetSfxVolume(float value)
+    {
+        sfxbgmVolume = Mathf.Clamp01(value);
+
+        if (sfxPlayers == null)
+        {
+            return;
+        }
+
+        for (int index = 0; index < sfxPlayers.Length; index++)
+        {
+            if (sfxPlayers[index] != null)
+            {
+                sfxPlayers[index].volume = sfxbgmVolume;
+            }
+        }
+    }
+
+    // 读取已保存的音量；没有存档时使用 Inspector 中的默认值。
+    public void LoadVolumeSettings()
+    {
+        float savedBgmVolume = PlayerPrefs.GetFloat(BgmVolumeKey, bgmVolume);
+        float savedSfxVolume = PlayerPrefs.GetFloat(SfxVolumeKey, sfxbgmVolume);
+
+        SetBgmVolume(savedBgmVolume);
+        SetSfxVolume(savedSfxVolume);
+    }
+
+    // 保存当前的背景音乐和音效音量。
+    public void SaveVolumeSettings()
+    {
+        PlayerPrefs.SetFloat(BgmVolumeKey, bgmVolume);
+        PlayerPrefs.SetFloat(SfxVolumeKey, sfxbgmVolume);
+
+        PlayerPrefs.Save();
     }
 
     public void EffectBgm(bool isPlay)
