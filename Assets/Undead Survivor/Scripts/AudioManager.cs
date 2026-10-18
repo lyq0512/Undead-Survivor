@@ -101,7 +101,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-        // 设置背景音乐音量，范围为 0～1。
+    // 设置背景音乐音量，范围为 0～1。
     public void SetBgmVolume(float value)
     {
         bgmVolume = Mathf.Clamp01(value);
@@ -112,7 +112,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-        // 设置所有音效通道的音量，范围为 0～1。
+    // 设置所有音效通道的音量，范围为 0～1。
     public void SetSfxVolume(float value)
     {
         sfxbgmVolume = Mathf.Clamp01(value);
@@ -165,7 +165,7 @@ public class AudioManager : MonoBehaviour
                 continue;
 
             int ranIndex = 0;
-            if (sfx == Sfx.Hit || sfx ==Sfx.Melee)
+            if (sfx == Sfx.Hit || sfx == Sfx.Melee)
             {
                 ranIndex = Random.Range(0, 2);
             }

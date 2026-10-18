@@ -65,6 +65,8 @@ public class GameManager : MonoBehaviour
 
     // 经验和等级更新完成后通知界面。
     public event System.Action ExperienceChanged;
+    // 确定游戏胜利时，通知成就系统。
+public event System.Action VictoryAchieved;
 
     private void NotifyExperienceChanged()
     {
@@ -118,6 +120,7 @@ public class GameManager : MonoBehaviour
     {
         isLive = false;
         enemyCleaner.SetActive(true);
+        VictoryAchieved?.Invoke();
 
         yield return new WaitForSeconds(0.5f);
 
@@ -128,6 +131,7 @@ public class GameManager : MonoBehaviour
         AudioManager.instance.PlayBgm(false);
         AudioManager.instance.PlayerSfx(AudioManager.Sfx.Win);
     }
+
 
     public void GameRetry()
     {

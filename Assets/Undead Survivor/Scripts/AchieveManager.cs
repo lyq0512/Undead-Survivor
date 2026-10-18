@@ -12,6 +12,7 @@ public class AchieveManager : MonoBehaviour
     enum Achieve { unlockJasper, unlockTater }
     Achieve[] achieves;
     WaitForSecondsRealtime wait;
+    private GameManager eventSource;
 
     private void Awake()
     {
@@ -22,9 +23,61 @@ public class AchieveManager : MonoBehaviour
             Init();
     }
 
+    private void OnEnable()
+    {
+        BindEvents();
+    }
+
     private void Start()
     {
         UnlockCharacter();
+
+        // 确保首次加载时 GameManager.Awake 已执行。
+        BindEvents();
+    }
+
+    private void OnDisable()
+    {
+        UnbindEvents();
+    }
+
+    private void BindEvents()
+    {
+        GameManager source = GameManager.instance;
+
+        if (source == null || eventSource == source)
+            return;
+
+        UnbindEvents();
+
+        eventSource = source;
+        eventSource.KillChanged += OnKillChanged;
+        eventSource.VictoryAchieved += OnVictoryAchieved;
+
+        // 首次绑定或重新启用时，补查当前状态。
+        OnKillChanged();
+        OnVictoryAchieved();
+    }
+
+    private void UnbindEvents()
+    {
+        if (eventSource != null)
+        {
+            eventSource.KillChanged -= OnKillChanged;
+            eventSource.VictoryAchieved -= OnVictoryAchieved;
+        }
+
+        eventSource = null;
+    }
+
+    private void OnKillChanged()
+    {
+        CheckAchieve(Achieve.unlockJasper);
+    }
+
+    private void OnVictoryAchieved()
+    {
+        CheckAchieve(Achieve.unlockTater);
     }
 
         // 查询指定角色是否已经解锁。
@@ -75,14 +128,6 @@ public class AchieveManager : MonoBehaviour
 
         //PlayerPrefs.SetInt("unlockJasper", 0);
         //PlayerPrefs.SetInt("unlockTater", 0);
-    }
-
-    private void LateUpdate()
-    {
-        foreach (Achieve achieve in achieves)
-        {
-            CheckAchieve(achieve);
-        }
     }
 
     private void CheckAchieve(Achieve achieve)
