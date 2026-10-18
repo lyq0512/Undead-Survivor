@@ -91,6 +91,7 @@ public class Enemy : MonoBehaviour
             spriter.sortingOrder = 1;
             anim.SetBool("Dead", true);
             GameManager.instance.kill++;
+            GameManager.instance.NotifyKillChanged();
             GameManager.instance.GetExp();
 
             if(GameManager.instance.isLive)

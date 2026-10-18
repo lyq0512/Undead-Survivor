@@ -77,6 +77,7 @@ public class Player : MonoBehaviour
             return;
 
         GameManager.instance.health -= Time.deltaTime * 10;
+        GameManager.instance.NotifyHealthChanged();
 
         if (GameManager.instance.health < 0)
         {

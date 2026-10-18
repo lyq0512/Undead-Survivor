@@ -115,6 +115,7 @@ public class Item : MonoBehaviour
 
             case ItemData.ItemType.Heal:
                 GameManager.instance.health = GameManager.instance.maxHealth;
+                GameManager.instance.NotifyHealthChanged();
                 // 消耗品不增加 level，也不会禁用按钮，直接退出
                 return;
         }

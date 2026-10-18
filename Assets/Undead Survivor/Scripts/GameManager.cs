@@ -29,6 +29,48 @@ public class GameManager : MonoBehaviour
     public Transform uiJoy;
     public GameObject enemyCleaner;
 
+    // 血量变化后，通知界面刷新。
+    public event System.Action HealthChanged;
+
+    public void NotifyHealthChanged()
+    {
+        HealthChanged?.Invoke();
+    }
+
+    // 只有显示的剩余秒数变化时，才通知倒计时刷新。
+    public event System.Action<int> RemainingSecondsChanged;
+
+    private int lastRemainingSeconds = int.MinValue;
+
+    private void NotifyRemainingSecondsChanged()
+    {
+        int remainingSeconds = Mathf.Max(
+            0,
+            Mathf.FloorToInt(maxGameTime - gameTime));
+
+        if (remainingSeconds == lastRemainingSeconds)
+            return;
+
+        lastRemainingSeconds = remainingSeconds;
+        RemainingSecondsChanged?.Invoke(remainingSeconds);
+    }
+
+    // 击杀数变化时通知界面。
+    public event System.Action KillChanged;
+
+    public void NotifyKillChanged()
+    {
+        KillChanged?.Invoke();
+    }
+
+    // 经验和等级更新完成后通知界面。
+    public event System.Action ExperienceChanged;
+
+    private void NotifyExperienceChanged()
+    {
+        ExperienceChanged?.Invoke();
+    }
+
     private void Awake()
     {
         instance = this;
@@ -38,6 +80,7 @@ public class GameManager : MonoBehaviour
     {
         playerId = id;
         health = maxHealth;
+        NotifyHealthChanged();
 
         player.gameObject.SetActive(true);
         uiLevelUp.Select(playerId % 2);
@@ -108,6 +151,8 @@ public class GameManager : MonoBehaviour
             gameTime = maxGameTime;
             GameVictory();
         }
+
+        NotifyRemainingSecondsChanged();
     }
 
     public void GetExp()
@@ -123,6 +168,8 @@ public class GameManager : MonoBehaviour
             exp = 0;
             uiLevelUp.Show();
         }
+
+        NotifyExperienceChanged();
     }
 
     public void Stop()
