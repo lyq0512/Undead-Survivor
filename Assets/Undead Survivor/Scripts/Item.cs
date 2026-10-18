@@ -57,7 +57,7 @@ public class Item : MonoBehaviour
             case ItemData.ItemType.Shoe:
                 if (level == 0)
                 {
-                    textDesc.text = string.Format(data.itemDesc, data.baseDamage * 100);
+                    textDesc.text = string.Format(data.itemDesc, data.damages[0] * 100);
                 }
                 else
                 {

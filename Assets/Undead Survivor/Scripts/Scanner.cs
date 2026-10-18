@@ -1,16 +1,30 @@
-using Microsoft.Extensions.Logging.Abstractions;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Scanner : MonoBehaviour
 {
     public float scanRange;
     public LayerMask targetLayer;
-    private RaycastHit2D[] targets;
+    // 初始预留容量，后续查询重复利用。
+    private readonly List<RaycastHit2D> targets = new List<RaycastHit2D>(64);
     public Transform nearestTarget;
 
     private void FixedUpdate()
     {
-        targets = Physics2D.CircleCastAll(transform.position, scanRange, Vector2.zero, 0, targetLayer);
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.SetLayerMask(targetLayer);
+        filter.useTriggers = Physics2D.queriesHitTriggers;
+
+        targets.Clear();
+
+        Physics2D.CircleCast(
+            transform.position,
+            scanRange,
+            Vector2.zero,
+            filter,
+            targets,
+            0f);
+
         nearestTarget = GetNearest();
     }
 
