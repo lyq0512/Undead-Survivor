@@ -8,6 +8,7 @@
 /[Mm]emoryCaptures/
 # Local profiler recordings and memory snapshots; findings are tracked in Docs.
 /[Pp]rofilerCaptures/
+/TextToolDatas/
 .vs/
 *.csproj
 *.unityproj
